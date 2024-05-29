@@ -3,10 +3,10 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 # Az alap URL, ahonnan az adatokat gyűjtjük
-base_url = 'https://sebok2.adatbank.ro/'
+base_url = 'https://sebok2.adatbank.ro/index.php?kezd='
 
 def get_data_from_page(page_number):
-    url = f'{base_url}?page={page_number}'
+    url = f'{base_url}{page_number}'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -38,9 +38,9 @@ def get_data_from_page(page_number):
 
 # Összes oldal feldolgozása
 all_data = []
-for page_number in range(1, 99):  # Feltételezzük, hogy 100 oldal van
-    print(f"Processing page: {page_number}")
-    page_data = get_data_from_page(page_number)
+for page_start in range(0, 344*30, 30):  # Feltételezzük, hogy 344 oldal van
+    print(f"Processing page starting at: {page_start}")
+    page_data = get_data_from_page(page_start)
     all_data.extend(page_data)
 
 # Az összes adat DataFrame-be és CSV fájlba mentése
@@ -62,5 +62,5 @@ df = df.dropna()
 # Eltávolítjuk az üres sorokat és oszlopokat
 df = df[(df['Magyar név'] != '') & (df['Mai hivatalos név'] != '') & (df['Ország'] != '')]
 
-df.to_csv('hatarontuli_helysegnevek.csv', index=False, encoding='utf-8')
+df.to_csv('szlovakiai_magyar_helysegnevek.csv', index=False, encoding='utf-8')
 print("Az adatok sikeresen kinyerve és elmentve a 'szlovakiai_magyar_helysegnevek.csv' fájlba.")
